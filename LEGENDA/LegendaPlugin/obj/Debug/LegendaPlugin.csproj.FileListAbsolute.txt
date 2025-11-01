@@ -1,0 +1,6 @@
+A:\_WSB\SEM 7\!_PROJEKT_WDROŻENIOWY\LEGENDA\LegendaPlugin\bin\Debug\LegendaPlugin.dll
+A:\_WSB\SEM 7\!_PROJEKT_WDROŻENIOWY\LEGENDA\LegendaPlugin\bin\Debug\LegendaPlugin.pdb
+A:\_WSB\SEM 7\!_PROJEKT_WDROŻENIOWY\LEGENDA\LegendaPlugin\obj\Debug\LegendaPlugin.csproj.AssemblyReference.cache
+A:\_WSB\SEM 7\!_PROJEKT_WDROŻENIOWY\LEGENDA\LegendaPlugin\obj\Debug\LegendaPlugin.csproj.CoreCompileInputs.cache
+A:\_WSB\SEM 7\!_PROJEKT_WDROŻENIOWY\LEGENDA\LegendaPlugin\obj\Debug\LegendaPlugin.dll
+A:\_WSB\SEM 7\!_PROJEKT_WDROŻENIOWY\LEGENDA\LegendaPlugin\obj\Debug\LegendaPlugin.pdb

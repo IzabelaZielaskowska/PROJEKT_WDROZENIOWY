@@ -1,0 +1,70 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|a:\\_wsb\\sem 7\\!_projekt_wdro\u017Ceniowy\\legenda\\legendaplugin\\legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|solutionrelative:legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|a:\\_wsb\\sem 7\\!_projekt_wdro\u017Ceniowy\\legenda\\legendaplugin\\legendacommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|solutionrelative:legendacommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|a:\\_wsb\\sem 7\\!_projekt_wdro\u017Ceniowy\\legenda\\legendaplugin\\legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|solutionrelative:legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LegendaForm.cs [Projekt]",
+              "DocumentMoniker": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs",
+              "RelativeDocumentMoniker": "LegendaForm.cs",
+              "ToolTip": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs [Projekt]",
+              "RelativeToolTip": "LegendaForm.cs [Projekt]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T19:10:37.572Z",
+              "EditorCaption": " [Projekt]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LegendaForm.cs",
+              "DocumentMoniker": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs",
+              "RelativeDocumentMoniker": "LegendaForm.cs",
+              "ToolTip": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs",
+              "RelativeToolTip": "LegendaForm.cs",
+              "ViewState": "AgIAAL8AAAAAAAAAAAAowHMBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:49:33.915Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LegendaCommands.cs",
+              "DocumentMoniker": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaCommands.cs",
+              "RelativeDocumentMoniker": "LegendaCommands.cs",
+              "ToolTip": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaCommands.cs",
+              "RelativeToolTip": "LegendaCommands.cs",
+              "ViewState": "AgIAAO8AAAAAAAAAAAAcwCYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T13:42:53.742Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
