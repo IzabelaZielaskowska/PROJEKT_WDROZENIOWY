@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|a:\\_wsb\\sem 7\\!_projekt_wdro\u017Ceniowy\\legenda\\legendaplugin\\legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|solutionrelative:legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaCommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LegendaCommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|a:\\_wsb\\sem 7\\!_projekt_wdro\u017Ceniowy\\legenda\\legendaplugin\\legendacommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|solutionrelative:legendacommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LegendaForm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|a:\\_wsb\\sem 7\\!_projekt_wdro\u017Ceniowy\\legenda\\legendaplugin\\legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{EACD0B69-F1B6-4B49-8051-D3DA9FFB23AE}|LegendaPlugin.csproj|solutionrelative:legendaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LegendaForm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
@@ -38,26 +38,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "LegendaForm.cs",
               "DocumentMoniker": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs",
               "RelativeDocumentMoniker": "LegendaForm.cs",
               "ToolTip": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaForm.cs",
               "RelativeToolTip": "LegendaForm.cs",
-              "ViewState": "AgIAAK0AAAAAAAAAAAAowHMBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-01T18:49:33.915Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "LegendaCommands.cs",
               "DocumentMoniker": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaCommands.cs",
               "RelativeDocumentMoniker": "LegendaCommands.cs",
               "ToolTip": "A:\\_WSB\\SEM 7\\!_PROJEKT_WDRO\u017BENIOWY\\LEGENDA\\LegendaPlugin\\LegendaCommands.cs",
               "RelativeToolTip": "LegendaCommands.cs",
-              "ViewState": "AgIAAO8AAAAAAAAAAAAcwCYBAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAAAGMAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-01T13:42:53.742Z",
               "EditorCaption": ""
