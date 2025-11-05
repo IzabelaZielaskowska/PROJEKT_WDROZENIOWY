@@ -60,15 +60,15 @@ namespace LegendPlugin
 
             int y0 = 25;
             grpMeta.Controls.Add(L("TYTUŁ RYSUNKU:", y0)); tbTytul = T(y0 + 18); grpMeta.Controls.Add(tbTytul);
-            grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", y0 + 60)); tbJednostka = T(y0 + 78); grpMeta.Controls.Add(tbJednostka);
-            grpMeta.Controls.Add(L("INWESTOR:", y0 + 120)); tbInwestor = T(y0 + 138); grpMeta.Controls.Add(tbInwestor);
-            grpMeta.Controls.Add(L("NAZWA I ADRES OBIEKTU:", y0 + 180)); tbObiekt = T(y0 + 198); grpMeta.Controls.Add(tbObiekt);
-            grpMeta.Controls.Add(L("PROJEKTANT:", y0 + 240)); tbProjektant = T(y0 + 258); grpMeta.Controls.Add(tbProjektant);
-            grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", y0 + 300)); tbSprawdzajacy = T(y0 + 318); grpMeta.Controls.Add(tbSprawdzajacy);
-            grpMeta.Controls.Add(L("OPRACOWAŁ(A):", y0 + 360)); tbOpracowujacy = T(y0 + 378); grpMeta.Controls.Add(tbOpracowujacy);
-            grpMeta.Controls.Add(L("DATA:", y0 + 420)); tbData = T(y0 + 438, false); grpMeta.Controls.Add(tbData);
-            grpMeta.Controls.Add(L("SKALA:", y0 + 420)); tbSkala = new TextBox { Left = 210, Top = y0 + 438, Width = 90 }; grpMeta.Controls.Add(tbSkala);
-            grpMeta.Controls.Add(L("NR RYS.:", y0 + 420)); tbNrRys = new TextBox { Left = 310, Top = y0 + 438, Width = 100 }; grpMeta.Controls.Add(tbNrRys);
+            grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", y0 + 50)); tbJednostka = T(y0 + 78); grpMeta.Controls.Add(tbJednostka);
+            grpMeta.Controls.Add(L("INWESTOR:", y0 + 110)); tbInwestor = T(y0 + 138); grpMeta.Controls.Add(tbInwestor);
+            grpMeta.Controls.Add(L("NAZWA I ADRES OBIEKTU:", y0 + 170)); tbObiekt = T(y0 + 198); grpMeta.Controls.Add(tbObiekt);
+            grpMeta.Controls.Add(L("PROJEKTANT:", y0 + 230)); tbProjektant = T(y0 + 258); grpMeta.Controls.Add(tbProjektant);
+            grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", y0 + 290)); tbSprawdzajacy = T(y0 + 318); grpMeta.Controls.Add(tbSprawdzajacy);
+            grpMeta.Controls.Add(L("OPRACOWAŁ(A):", y0 + 350)); tbOpracowujacy = T(y0 + 378); grpMeta.Controls.Add(tbOpracowujacy);
+            grpMeta.Controls.Add(L("DATA:", y0 + 410)); tbData = T(y0 + 438, false); grpMeta.Controls.Add(tbData);
+            grpMeta.Controls.Add(L("SKALA:", y0 + 410)); tbSkala = new TextBox { Left = 210, Top = y0 + 438, Width = 90 }; grpMeta.Controls.Add(tbSkala);
+            grpMeta.Controls.Add(L("NR RYS.:", y0 + 410)); tbNrRys = new TextBox { Left = 310, Top = y0 + 438, Width = 100 }; grpMeta.Controls.Add(tbNrRys);
 
             btnOk = new Button { Text = "OK", Left = 640, Top = 540, Width = 110, DialogResult = DialogResult.OK };
             btnCancel = new Button { Text = "Anuluj", Left = 760, Top = 540, Width = 110, DialogResult = DialogResult.Cancel };
@@ -141,6 +141,7 @@ namespace LegendPlugin
                 NumerRysunku = tbNrRys.Text
             };
             return d;
+
         }
     }
 }
