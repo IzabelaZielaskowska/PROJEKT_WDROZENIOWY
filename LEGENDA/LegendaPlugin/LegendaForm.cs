@@ -145,8 +145,8 @@ namespace LegendPlugin
                 Sprawdzajacy = tbSprawdzajacy.Text,
                 Opracowujacy = tbOpracowujacy.Text,
                 Data = dtpData.Value.ToShortDateString(),
-                Skala = tbSkala.Text,
-                NumerRysunku = tbNrRys.Text
+                //Skala = tbSkala.Text,
+                //NumerRysunku = tbNrRys.Text
             };
             return d;
 
