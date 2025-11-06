@@ -66,7 +66,16 @@ namespace LegendPlugin
             grpMeta.Controls.Add(L("PROJEKTANT:", y0 + 230)); tbProjektant = T(y0 + 258); grpMeta.Controls.Add(tbProjektant);
             grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", y0 + 290)); tbSprawdzajacy = T(y0 + 318); grpMeta.Controls.Add(tbSprawdzajacy);
             grpMeta.Controls.Add(L("OPRACOWAŁ(A):", y0 + 350)); tbOpracowujacy = T(y0 + 378); grpMeta.Controls.Add(tbOpracowujacy);
-            grpMeta.Controls.Add(L("DATA:", y0 + 410)); tbData = T(y0 + 438, false); grpMeta.Controls.Add(tbData);
+            grpMeta.Controls.Add(L("DATA:", y0 + 410)); 
+            var dtpData = new DateTimePicker
+            {
+                Left = 10,
+                Top = y0 + 438,
+                Width = 180,
+                Format = DateTimePickerFormat.Short,  // format: dd.MM.yyyy
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular)
+            };
+            grpMeta.Controls.Add(dtpData);
             grpMeta.Controls.Add(L("SKALA:", y0 + 410)); tbSkala = new TextBox { Left = 210, Top = y0 + 438, Width = 90 }; grpMeta.Controls.Add(tbSkala);
             grpMeta.Controls.Add(L("NR RYS.:", y0 + 410)); tbNrRys = new TextBox { Left = 310, Top = y0 + 438, Width = 100 }; grpMeta.Controls.Add(tbNrRys);
 
@@ -136,7 +145,7 @@ namespace LegendPlugin
                 Projektant = tbProjektant.Text,
                 Sprawdzajacy = tbSprawdzajacy.Text,
                 Opracowujacy = tbOpracowujacy.Text,
-                Data = tbData.Text,
+                Data = dtpData.Value.ToShortDateString(),
                 Skala = tbSkala.Text,
                 NumerRysunku = tbNrRys.Text
             };
