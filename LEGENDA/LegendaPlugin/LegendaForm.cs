@@ -15,7 +15,8 @@ namespace LegendPlugin
     {
         // Komentarz: Kontrolki.
         private CheckedListBox clbLayers;
-        private TextBox tbJednostka, tbInwestor, tbObiekt, tbTytul, tbProjektant, tbSprawdzajacy, tbOpracowujacy, tbData, tbSkala, tbNrRys;
+        private TextBox tbJednostka, tbInwestor, tbObiekt, tbTytul, tbProjektant, tbSprawdzajacy, tbOpracowujacy, tbSkala, tbNrRys;
+        DateTimePicker dtpData;
         private Button btnOk, btnCancel;
 
         // Komentarz: Warstwy wejściowe (z kolorem AutoCAD).
