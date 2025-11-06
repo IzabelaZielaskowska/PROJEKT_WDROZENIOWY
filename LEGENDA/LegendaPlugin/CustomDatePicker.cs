@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace LegendPlugin
 {
-    // Elegancki własny selektor daty z klasyczną ikoną kalendarza
+    // kalendarz z taką ikoną zeby pasowała do reszty
     public class CustomDatePicker : UserControl
     {
         private TextBox txtDate;
@@ -47,7 +47,7 @@ namespace LegendPlugin
             this.MinimumSize = new Size(120, txtDate.Height);
         }
 
-        // Rysowanie małej ikonki kalendarza
+        // Rysowanie ikony - zapytać Izy czy taka ok
         private void BtnCalendar_Paint(object sender, PaintEventArgs e)
         {
             var g = e.Graphics;
@@ -80,7 +80,7 @@ namespace LegendPlugin
                 BackColor = Color.White,
                 TopMost = true,
                 AutoSize = true,
-                MaximumSize = new Size(800, 200),
+                MaximumSize = new Size(800, 200), // trzeba bylo ustawic bo cos mi nie dzialalo z wielkoscia
             };
 
             calendar = new MonthCalendar
@@ -99,19 +99,12 @@ namespace LegendPlugin
                 popupForm = null;
             };
 
-            // Ustawiamy kalendarz w formie w naturalnym rozmiarze
-            //calendar.Location = new Point(0, 0); 
+            // Ustawiamy kalendarz w formie w naturalnym rozmiarze 
             popupForm.Controls.Add(calendar);
-            //popupForm.ClientSize = calendar.PreferredSize; // forma dokładnie dopasowana do kalendarza
             calendar.AutoSize = true;
-            calendar.Dock = DockStyle.Fill; // Dopasowujemy formularz do kalendarza
+            calendar.Dock = DockStyle.Fill; // Dopasowujemy formularz do kalendarza - pomoglo czesciowo
             var screenPoint = this.PointToScreen(new Point(0, this.Height));
             popupForm.Location = screenPoint;
-
-
-            // Pozycja popup pod kontrolką
-            //var screenPoint = this.PointToScreen(new Point(0, this.Height));
-            //popupForm.Location = screenPoint;
 
             popupForm.Deactivate += (s, e) =>
             {
