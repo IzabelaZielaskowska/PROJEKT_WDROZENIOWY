@@ -1,14 +1,14 @@
 ﻿// Komentarz: .NET/WinForms.
+using Autodesk.AutoCAD.DatabaseServices;
+using LegendPlugin;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using LegendPlugin;
 using System.Windows.Forms;
-
+using AcColor = Autodesk.AutoCAD.Colors.Color;        // Komentarz: Kolor AutoCAD-a (warstwy).
 // Komentarz: >>> Aliasujemy typy koloru, aby uniknąć konfliktu nazw.
 using SDColor = System.Drawing.Color;                  // Komentarz: Kolor do rysowania w WinForms.
-using AcColor = Autodesk.AutoCAD.Colors.Color;        // Komentarz: Kolor AutoCAD-a (warstwy).
 
 namespace LegendPlugin
 {
@@ -61,6 +61,7 @@ namespace LegendPlugin
             TextBox T(int y, bool wide = true) => new TextBox { Left = 10, Top = y, Width = wide ? 400 : 180 };
 
             int y0 = 25;
+            int yRow = y0 + 410;
             grpMeta.Controls.Add(L("TYTUŁ RYSUNKU:", y0)); tbTytul = T(y0 + 25); grpMeta.Controls.Add(tbTytul);
             grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", y0 + 50)); tbJednostka = T(y0 + 78); grpMeta.Controls.Add(tbJednostka);
             grpMeta.Controls.Add(L("INWESTOR:", y0 + 110)); tbInwestor = T(y0 + 138); grpMeta.Controls.Add(tbInwestor);
@@ -68,12 +69,43 @@ namespace LegendPlugin
             grpMeta.Controls.Add(L("PROJEKTANT:", y0 + 230)); tbProjektant = T(y0 + 258); grpMeta.Controls.Add(tbProjektant);
             grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", y0 + 290)); tbSprawdzajacy = T(y0 + 318); grpMeta.Controls.Add(tbSprawdzajacy);
             grpMeta.Controls.Add(L("OPRACOWAŁ(A):", y0 + 350)); tbOpracowujacy = T(y0 + 378); grpMeta.Controls.Add(tbOpracowujacy);
-            grpMeta.Controls.Add(L("DATA:", y0 + 410));
-            dtpData = new CustomDatePicker
+
+            var labelSkala = L("SKALA:", yRow);
+            labelSkala.Left = 10;
+            labelSkala.Width = 120;
+            grpMeta.Controls.Add(labelSkala);
+
+            tbSkala = new TextBox
             {
                 Left = 10,
-                Top = y0 + 438,
-                Width = 180
+                Top = yRow + 25,
+                Width = 120
+            };
+            grpMeta.Controls.Add(tbSkala);
+
+            var labelNr = L("NR. RYSUNKU:", yRow);
+            labelNr.Left = 150;
+            labelNr.Width = 120;
+            grpMeta.Controls.Add(labelNr);
+
+            tbNrRys = new TextBox
+            {
+                Left = 150,
+                Top = yRow + 25,
+                Width = 120
+            };
+            grpMeta.Controls.Add(tbNrRys);
+
+            var labelData = L("DATA:", yRow);
+            labelData.Left = 290;
+            labelData.Width = 120;
+            grpMeta.Controls.Add(labelData);
+
+            dtpData = new CustomDatePicker
+            {
+                Left = 290,
+                Top = yRow + 25,
+                Width = 120
             };
             grpMeta.Controls.Add(dtpData);
 
@@ -144,9 +176,10 @@ namespace LegendPlugin
                 Projektant = tbProjektant.Text,
                 Sprawdzajacy = tbSprawdzajacy.Text,
                 Opracowujacy = tbOpracowujacy.Text,
+                Skala = tbSkala.Text,
+                NumerRysunku = tbNrRys.Text,
                 Data = dtpData.Value.ToShortDateString(),
-                //Skala = tbSkala.Text,
-                //NumerRysunku = tbNrRys.Text
+
             };
             return d;
 
