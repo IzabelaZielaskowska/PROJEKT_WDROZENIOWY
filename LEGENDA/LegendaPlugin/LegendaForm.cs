@@ -52,7 +52,8 @@ namespace LegendPlugin
                 Height = 490,
                 DrawMode = DrawMode.OwnerDrawFixed,
                 IntegralHeight = false,
-                BorderStyle = BorderStyle.FixedSingle
+                BorderStyle = BorderStyle.FixedSingle,
+                CheckOnClick = true
             };
             clbLayers.DrawItem += ClbLayers_DrawItem;
             grpLayers.Controls.Add(clbLayers);
