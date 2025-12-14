@@ -66,7 +66,7 @@ namespace LegendPlugin
         private const double Margin = 5.0;
 
         // Komentarz: Wysokość górnego panelu z legendą (nagłówek + wiersze).
-        private const double LegendPanelHeight = 80.0;
+        //private const double LegendPanelHeight = 80.0;
         // Komentarz: Wysokość dolnej metryczki (pól i tabelki).
         private const double TitleBlockHeight = 110.0;
 
@@ -145,12 +145,17 @@ namespace LegendPlugin
                 // ==============================================
                 // Komentarz: 2) Górny panel – LEGENDA (z wierszami)
                 // ==============================================
-
+                var legendRowCount = data.SelectedLayers.Count; // tu liczy ilosc wierszy
+                var legH = CaptionHeight + 2 * LegendInnerPad + legendRowCount * LegendRowHeight; // dynamicznie zmieniająca się legenda
                 // Komentarz: Wyznaczamy lewy-dolny punkt i rozmiar panelu legendy.
                 var legX = innerX;
-                var legY = innerY + innerH - LegendPanelHeight;
+                var legY = innerY + innerH - legH;
+                    //LegendPanelHeight;
                 var legW = innerW;
-                var legH = LegendPanelHeight;
+                //var legendRowCount = data.SelectedLayers.Count; // tu liczy ilosc wierszy
+                //var legH = CaptionHeight + 2 * LegendInnerPad + legendRowCount * LegendRowHeight; // dynamicznie zmieniająca się legenda
+
+                //var legH = LegendPanelHeight;
 
                 // Komentarz: Rysujemy obwiednię panelu legendy.
                 var legendBox = MakeRectLW(new Point2d(legX, legY), legW, legH);
@@ -175,8 +180,8 @@ namespace LegendPlugin
                 // Komentarz: Wyliczamy maksymalną liczbę wierszy, które zmieszczą się w panelu.
                 int maxRows = (int)Math.Floor((currentY - (legY + LegendInnerPad)) / LegendRowHeight);
                 // Komentarz: Przycinamy listę warstw do liczby mieszczących się wierszy.
-                var legendRows = data.SelectedLayers.Take(Math.Max(0, maxRows)).ToList();
-
+                // var legendRows = data.SelectedLayers.Take(Math.Max(0, maxRows)).ToList();
+                var legendRows = data.SelectedLayers.ToList();
                 // Komentarz: Iterujemy po warstwach do narysowania pozycji legendy.
                 foreach (var layerName in legendRows)
                 {
