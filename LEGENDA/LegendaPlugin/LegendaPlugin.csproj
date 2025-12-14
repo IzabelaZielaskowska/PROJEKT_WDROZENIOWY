@@ -55,6 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomDatePicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="LegendaForm.cs">
       <SubType>Form</SubType>
     </Compile>
