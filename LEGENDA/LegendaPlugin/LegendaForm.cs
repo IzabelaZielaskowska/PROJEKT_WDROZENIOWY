@@ -17,9 +17,21 @@ namespace LegendPlugin
         // Komentarz: Kontrolki.
         private CheckedListBox clbLayers;
         private TextBox tbJednostka, tbInwestor, tbObiekt, tbTytul, tbSkala, tbNrRys;
-        private ComboBox cbProjektant, cbSprawdzajacy, cbOpracowujacy;  
-        private LegendPlugin. CustomDatePicker dtpData;
+        private ComboBox cbProjektant, cbSprawdzajacy, cbOpracowujacy;
+        private LegendPlugin.CustomDatePicker dtpData;
         private Button btnOk, btnCancel;
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // LegendForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "LegendForm";
+            this.ResumeLayout(false);
+
+        }
 
         // Komentarz: Warstwy wejściowe (z kolorem AutoCAD).
         private readonly List<LegendCommand.LayerInfo> _layers;
@@ -30,7 +42,7 @@ namespace LegendPlugin
             _layers = layers ?? new List<LegendCommand.LayerInfo>();
             this.Text = "Legenda – wybór warstw i dane metryczki";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Size = new Size(900, 620);
+            this.Size = new Size(900, 620); // Rozmiar okna bez zmian
             this.MinimizeBox = false;
             this.MaximizeBox = false;
 
@@ -42,14 +54,15 @@ namespace LegendPlugin
         // Komentarz: Budowa interfejsu.
         private void BuildUi()
         {
-            var grpLayers = new GroupBox { Text = "Warstwy do legendy (z ikoną koloru)", Left = 10, Top = 10, Width = 430, Height = 520 };
+            // Grupa lewa: Warstwy
+            var grpLayers = new GroupBox { Text = "Warstwy do legendy (z ikoną koloru)", Left = 10, Top = 10, Width = 430, Height = 530 };
 
             clbLayers = new CheckedListBox
             {
                 Left = 10,
                 Top = 20,
                 Width = 410,
-                Height = 490,
+                Height = 500,
                 DrawMode = DrawMode.OwnerDrawFixed,
                 IntegralHeight = false,
                 BorderStyle = BorderStyle.FixedSingle,
@@ -58,23 +71,85 @@ namespace LegendPlugin
             clbLayers.DrawItem += ClbLayers_DrawItem;
             grpLayers.Controls.Add(clbLayers);
 
-            var grpMeta = new GroupBox { Text = "Dane metryczki", Left = 450, Top = 10, Width = 430, Height = 520 };
+            // Grupa prawa: Metryczka
+            var grpMeta = new GroupBox { Text = "Dane metryczki", Left = 450, Top = 10, Width = 430, Height = 530 };
 
+            // Funkcje pomocnicze do tworzenia etykiet i prostych kontrolek
             Label L(string t, int y) => new Label { Text = t, Left = 10, Top = y, Width = 200 };
             TextBox T(int y, bool wide = true) => new TextBox { Left = 10, Top = y, Width = wide ? 400 : 180 };
             ComboBox C(int y) => new ComboBox { Left = 10, Top = y, Width = 400, DropDownStyle = ComboBoxStyle.DropDown };
 
-            int y0 = 25;
-            int yRow = y0 + 410;
-            grpMeta.Controls.Add(L("TYTUŁ RYSUNKU:", y0)); tbTytul = T(y0 + 25); tbTytul.MaxLength = 200; grpMeta.Controls.Add(tbTytul);
-            grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", y0 + 50)); tbJednostka = T(y0 + 78); tbJednostka.MaxLength = 200; grpMeta.Controls.Add(tbJednostka);
-            grpMeta.Controls.Add(L("INWESTOR:", y0 + 110)); tbInwestor = T(y0 + 138); tbInwestor.MaxLength = 200; grpMeta.Controls.Add(tbInwestor);
-            grpMeta.Controls.Add(L("NAZWA I ADRES OBIEKTU:", y0 + 170)); tbObiekt = T(y0 + 198); tbObiekt.MaxLength = 200; grpMeta.Controls.Add(tbObiekt);
-            
-            grpMeta.Controls.Add(L("PROJEKTANT:", y0 + 230)); cbProjektant = C(y0 + 258); cbProjektant.MaxLength = 40; grpMeta.Controls.Add(cbProjektant);
-            grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", y0 + 290)); cbSprawdzajacy = C(y0 + 318); cbSprawdzajacy.MaxLength = 40; grpMeta.Controls.Add(cbSprawdzajacy);
-            grpMeta.Controls.Add(L("OPRACOWAŁ(A):", y0 + 350)); cbOpracowujacy = C(y0 + 378); cbOpracowujacy.MaxLength = 40; grpMeta.Controls.Add(cbOpracowujacy);
+            int y0 = 25; // Pozycja startowa Y
 
+            // 1. TYTUŁ RYSUNKU
+            grpMeta.Controls.Add(L("TYTUŁ RYSUNKU:", y0));
+            tbTytul = T(y0 + 25);
+            tbTytul.MaxLength = 200;
+            grpMeta.Controls.Add(tbTytul);
+
+            // 2. JEDNOSTKA PROJEKTOWA (Zmiana: Multiline)
+            // Przesuwamy nieco w dół
+            int yJednostka = y0 + 60;
+            grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", yJednostka));
+            // Tworzymy TextBox ręcznie, aby włączyć Multiline
+            tbJednostka = new TextBox
+            {
+                Left = 10,
+                Top = yJednostka + 25,
+                Width = 400,
+                Height = 45, // Wyższy, na ok. 2-3 linie
+                Multiline = true,
+                AcceptsReturn = true, // Obsługa entera
+                ScrollBars = ScrollBars.Vertical
+            };
+            // Usuwam MaxLength (domyślnie 32767), żeby nie ograniczać
+            grpMeta.Controls.Add(tbJednostka);
+
+            // 3. INWESTOR (Zmiana: Multiline)
+            int yInwestor = yJednostka + 80; // Większy odstęp ze względu na wysokość poprzedniego pola
+            grpMeta.Controls.Add(L("INWESTOR:", yInwestor));
+            tbInwestor = new TextBox
+            {
+                Left = 10,
+                Top = yInwestor + 25,
+                Width = 400,
+                Height = 45, // Wyższy
+                Multiline = true,
+                AcceptsReturn = true,
+                ScrollBars = ScrollBars.Vertical
+            };
+            grpMeta.Controls.Add(tbInwestor);
+
+            // 4. NAZWA I ADRES OBIEKTU (Standard)
+            int yObiekt = yInwestor + 80;
+            grpMeta.Controls.Add(L("NAZWA I ADRES OBIEKTU:", yObiekt));
+            tbObiekt = T(yObiekt + 25);
+            tbObiekt.MaxLength = 200;
+            grpMeta.Controls.Add(tbObiekt);
+
+            // 5. OSOBY (Zmiana: Usunięcie limitu znaków)
+            int yProjektant = yObiekt + 60;
+            grpMeta.Controls.Add(L("PROJEKTANT:", yProjektant));
+            cbProjektant = C(yProjektant + 25);
+            // Usunięto: cbProjektant.MaxLength = 40;
+            grpMeta.Controls.Add(cbProjektant);
+
+            int ySprawdzajacy = yProjektant + 60;
+            grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", ySprawdzajacy));
+            cbSprawdzajacy = C(ySprawdzajacy + 25);
+            // Usunięto: cbSprawdzajacy.MaxLength = 40;
+            grpMeta.Controls.Add(cbSprawdzajacy);
+
+            int yOpracowujacy = ySprawdzajacy + 60;
+            grpMeta.Controls.Add(L("OPRACOWAŁ(A)::", yOpracowujacy));
+            cbOpracowujacy = C(yOpracowujacy + 25);
+            // Usunięto: cbOpracowujacy.MaxLength = 40;
+            grpMeta.Controls.Add(cbOpracowujacy);
+
+            // 6. STOPKA (Skala, Nr Rys, Data)
+            int yRow = yOpracowujacy + 60; // Dolna linia formularza
+
+            // Skala
             var labelSkala = L("SKALA:", yRow);
             labelSkala.Left = 10;
             labelSkala.Width = 120;
@@ -89,6 +164,7 @@ namespace LegendPlugin
             };
             grpMeta.Controls.Add(tbSkala);
 
+            // Nr Rysunku
             var labelNr = L("NR. RYSUNKU:", yRow);
             labelNr.Left = 150;
             labelNr.Width = 120;
@@ -103,6 +179,7 @@ namespace LegendPlugin
             };
             grpMeta.Controls.Add(tbNrRys);
 
+            // Data
             var labelData = L("DATA:", yRow);
             labelData.Left = 290;
             labelData.Width = 120;
@@ -117,9 +194,10 @@ namespace LegendPlugin
             grpMeta.Controls.Add(dtpData);
 
 
-            btnOk = new Button { Text = "OK", Left = 640, Top = 540, Width = 110, DialogResult = DialogResult.OK };
-            btnOk.Click += BtnOk_Click; // Potrzebne do walidacji przed zamknięciem formularza.
-            btnCancel = new Button { Text = "Anuluj", Left = 760, Top = 540, Width = 110, DialogResult = DialogResult.Cancel };
+            // Przyciski dolne
+            btnOk = new Button { Text = "OK", Left = 640, Top = 550, Width = 110, DialogResult = DialogResult.OK };
+            btnOk.Click += BtnOk_Click;
+            btnCancel = new Button { Text = "Anuluj", Left = 760, Top = 550, Width = 110, DialogResult = DialogResult.Cancel };
 
 
             this.Controls.Add(grpLayers);
@@ -139,7 +217,7 @@ namespace LegendPlugin
                 clbLayers.Items.Add(l, false);
         }
 
-        private void LoadPersonLists() // Tu się ładuje lista z ComboBox-ów z plików.
+        private void LoadPersonLists()
         {
             cbProjektant.Items.AddRange(PersonMemory.LoadProjektanci().ToArray());
             cbSprawdzajacy.Items.AddRange(PersonMemory.LoadSprawdzajacy().ToArray());

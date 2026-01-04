@@ -71,5 +71,10 @@
       <DependentUpon>SavePersonDialog.cs</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LegendaForm.resx">
+      <DependentUpon>LegendaForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
