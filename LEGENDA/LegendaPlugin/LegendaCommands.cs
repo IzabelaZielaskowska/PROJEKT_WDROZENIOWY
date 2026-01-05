@@ -68,8 +68,8 @@ namespace LegendPlugin
         private const double FontH_Label = 0.8;
         private const double FontH_Content = 1.2;
         private const double FontH_Title = 1.5;
-        private const double FontH_SigContent = 0.75; // Mała czcionka w tabeli podpisów
-        private const double FontH_FooterLabel = 0.7; // Etykiety w stopce
+        private const double FontH_SigContent = 0.75;
+        private const double FontH_FooterLabel = 0.7;
 
         // Komentarz: Parametry legendy (górnej części).
         private const double LegendRowHeight = 5.0;
@@ -291,14 +291,20 @@ namespace LegendPlugin
                         btr.AppendEntity(lineSymbol); tr.AddNewlyCreatedDBObject(lineSymbol, true);
                     }
 
-                    // C. Opis tekstowy
-                    var descTxt = new DBText();
-                    descTxt.Position = new Point3d(legendX + IconSize + 2.0, rowY + 1.5, 0);
-                    descTxt.Height = FontH_Content;
-                    descTxt.TextString = info.Name;
-                    btr.AppendEntity(descTxt); tr.AddNewlyCreatedDBObject(descTxt, true);
+                    // C. Opis tekstowy (MText z zawijaniem)
+                    var mt = new MText();
+                    mt.Contents = info.Name;
+                    mt.TextHeight = FontH_Content;
+                    mt.Width = 40.0;
+                    mt.Attachment = AttachmentPoint.MiddleLeft;
+                    mt.Location = new Point3d(legendX + IconSize + 2.0, icMidY, 0);
 
-                    rowY -= LegendRowHeight;
+                    btr.AppendEntity(mt); tr.AddNewlyCreatedDBObject(mt, true);
+
+                    double textActualHeight = mt.ActualHeight;
+                    double stepDown = Math.Max(LegendRowHeight, textActualHeight + 1.5);
+
+                    rowY -= stepDown;
                 }
 
                 tr.Commit();
