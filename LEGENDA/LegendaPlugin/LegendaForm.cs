@@ -14,24 +14,13 @@ namespace LegendPlugin
 {
     public class LegendForm : Form
     {
-        // Komentarz: Kontrolki.
-        private CheckedListBox clbLayers;
+        // Komentarz: Zmieniamy CheckedListBox na DataGridView, aby mieć kolumny.
+        private DataGridView dgvLayers;
+
         private TextBox tbJednostka, tbInwestor, tbObiekt, tbTytul, tbSkala, tbNrRys;
         private ComboBox cbProjektant, cbSprawdzajacy, cbOpracowujacy;
         private LegendPlugin.CustomDatePicker dtpData;
         private Button btnOk, btnCancel;
-
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // LegendForm
-            // 
-            this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "LegendForm";
-            this.ResumeLayout(false);
-
-        }
 
         // Komentarz: Warstwy wejściowe (z kolorem AutoCAD).
         private readonly List<LegendCommand.LayerInfo> _layers;
@@ -42,12 +31,12 @@ namespace LegendPlugin
             _layers = layers ?? new List<LegendCommand.LayerInfo>();
             this.Text = "Legenda – wybór warstw i dane metryczki";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Size = new Size(900, 620); // Rozmiar okna bez zmian
+            this.Size = new Size(950, 620); // Nieco szersze okno dla tabeli
             this.MinimizeBox = false;
             this.MaximizeBox = false;
 
             BuildUi();
-            LoadLayers();
+            LoadLayersToGrid(); // Zmiana nazwy metody ładowania
             LoadPersonLists();
         }
 
@@ -55,24 +44,34 @@ namespace LegendPlugin
         private void BuildUi()
         {
             // Grupa lewa: Warstwy
-            var grpLayers = new GroupBox { Text = "Warstwy do legendy (z ikoną koloru)", Left = 10, Top = 10, Width = 430, Height = 530 };
+            var grpLayers = new GroupBox { Text = "Warstwy (zaznacz 'Kwadrat' dla hatch)", Left = 10, Top = 10, Width = 430, Height = 530 };
 
-            clbLayers = new CheckedListBox
+            // Komentarz: Tworzymy tabelę zamiast listy
+            dgvLayers = new DataGridView
             {
                 Left = 10,
                 Top = 20,
                 Width = 410,
                 Height = 500,
-                DrawMode = DrawMode.OwnerDrawFixed,
-                IntegralHeight = false,
-                BorderStyle = BorderStyle.FixedSingle,
-                CheckOnClick = true
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                AllowUserToResizeRows = false,
+                RowHeadersVisible = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                BackgroundColor = SystemColors.Window,
+                BorderStyle = BorderStyle.FixedSingle
             };
-            clbLayers.DrawItem += ClbLayers_DrawItem;
-            grpLayers.Controls.Add(clbLayers);
 
-            // Grupa prawa: Metryczka
-            var grpMeta = new GroupBox { Text = "Dane metryczki", Left = 450, Top = 10, Width = 430, Height = 530 };
+            // Definicja kolumn
+            var colCheck = new DataGridViewCheckBoxColumn { HeaderText = "Wybierz", Width = 50, Name = "colCheck" };
+            var colName = new DataGridViewTextBoxColumn { HeaderText = "Nazwa Warstwy", Width = 307, Name = "colName", ReadOnly = true };
+            var colIsHatch = new DataGridViewCheckBoxColumn { HeaderText = "Kwadrat", Width = 50, Name = "colIsHatch", ToolTipText = "Zaznacz, aby rysować wypełniony kwadrat (Solid Hatch)" };
+
+            dgvLayers.Columns.AddRange(colCheck, colName, colIsHatch);
+            grpLayers.Controls.Add(dgvLayers);
+
+            // Grupa prawa: Metryczka (BEZ ZMIAN W UKŁADZIE)
+            var grpMeta = new GroupBox { Text = "Dane metryczki", Left = 500, Top = 10, Width = 430, Height = 530 };
 
             // Funkcje pomocnicze do tworzenia etykiet i prostych kontrolek
             Label L(string t, int y) => new Label { Text = t, Left = 10, Top = y, Width = 200 };
@@ -87,118 +86,75 @@ namespace LegendPlugin
             tbTytul.MaxLength = 200;
             grpMeta.Controls.Add(tbTytul);
 
-            // 2. JEDNOSTKA PROJEKTOWA (Zmiana: Multiline)
-            // Przesuwamy nieco w dół
+            // 2. JEDNOSTKA PROJEKTOWA
             int yJednostka = y0 + 60;
             grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", yJednostka));
-            // Tworzymy TextBox ręcznie, aby włączyć Multiline
             tbJednostka = new TextBox
             {
                 Left = 10,
                 Top = yJednostka + 25,
                 Width = 400,
-                Height = 45, // Wyższy, na ok. 2-3 linie
+                Height = 45,
                 Multiline = true,
-                AcceptsReturn = true, // Obsługa entera
+                AcceptsReturn = true,
                 ScrollBars = ScrollBars.Vertical
             };
-            // Usuwam MaxLength (domyślnie 32767), żeby nie ograniczać
             grpMeta.Controls.Add(tbJednostka);
 
-            // 3. INWESTOR (Zmiana: Multiline)
-            int yInwestor = yJednostka + 80; // Większy odstęp ze względu na wysokość poprzedniego pola
+            // 3. INWESTOR
+            int yInwestor = yJednostka + 80;
             grpMeta.Controls.Add(L("INWESTOR:", yInwestor));
             tbInwestor = new TextBox
             {
                 Left = 10,
                 Top = yInwestor + 25,
                 Width = 400,
-                Height = 45, // Wyższy
+                Height = 45,
                 Multiline = true,
                 AcceptsReturn = true,
                 ScrollBars = ScrollBars.Vertical
             };
             grpMeta.Controls.Add(tbInwestor);
 
-            // 4. NAZWA I ADRES OBIEKTU (Standard)
+            // 4. NAZWA I ADRES OBIEKTU
             int yObiekt = yInwestor + 80;
             grpMeta.Controls.Add(L("NAZWA I ADRES OBIEKTU:", yObiekt));
             tbObiekt = T(yObiekt + 25);
             tbObiekt.MaxLength = 200;
             grpMeta.Controls.Add(tbObiekt);
 
-            // 5. OSOBY (Zmiana: Usunięcie limitu znaków)
+            // 5. OSOBY
             int yProjektant = yObiekt + 60;
             grpMeta.Controls.Add(L("PROJEKTANT:", yProjektant));
             cbProjektant = C(yProjektant + 25);
-            // Usunięto: cbProjektant.MaxLength = 40;
             grpMeta.Controls.Add(cbProjektant);
 
             int ySprawdzajacy = yProjektant + 60;
             grpMeta.Controls.Add(L("SPRAWDZAJĄCY:", ySprawdzajacy));
             cbSprawdzajacy = C(ySprawdzajacy + 25);
-            // Usunięto: cbSprawdzajacy.MaxLength = 40;
             grpMeta.Controls.Add(cbSprawdzajacy);
 
             int yOpracowujacy = ySprawdzajacy + 60;
             grpMeta.Controls.Add(L("OPRACOWAŁ(A)::", yOpracowujacy));
             cbOpracowujacy = C(yOpracowujacy + 25);
-            // Usunięto: cbOpracowujacy.MaxLength = 40;
             grpMeta.Controls.Add(cbOpracowujacy);
 
-            // 6. STOPKA (Skala, Nr Rys, Data)
-            int yRow = yOpracowujacy + 60; // Dolna linia formularza
+            // 6. STOPKA
+            int yRow = yOpracowujacy + 60;
 
-            // Skala
-            var labelSkala = L("SKALA:", yRow);
-            labelSkala.Left = 10;
-            labelSkala.Width = 120;
-            grpMeta.Controls.Add(labelSkala);
+            var labelSkala = L("SKALA:", yRow); labelSkala.Left = 10; labelSkala.Width = 120; grpMeta.Controls.Add(labelSkala);
+            tbSkala = new TextBox { Left = 10, Top = yRow + 25, Width = 120, MaxLength = 20 }; grpMeta.Controls.Add(tbSkala);
 
-            tbSkala = new TextBox
-            {
-                Left = 10,
-                Top = yRow + 25,
-                Width = 120,
-                MaxLength = 20
-            };
-            grpMeta.Controls.Add(tbSkala);
+            var labelNr = L("NR. RYSUNKU:", yRow); labelNr.Left = 150; labelNr.Width = 120; grpMeta.Controls.Add(labelNr);
+            tbNrRys = new TextBox { Left = 150, Top = yRow + 25, Width = 120, MaxLength = 10 }; grpMeta.Controls.Add(tbNrRys);
 
-            // Nr Rysunku
-            var labelNr = L("NR. RYSUNKU:", yRow);
-            labelNr.Left = 150;
-            labelNr.Width = 120;
-            grpMeta.Controls.Add(labelNr);
-
-            tbNrRys = new TextBox
-            {
-                Left = 150,
-                Top = yRow + 25,
-                Width = 120,
-                MaxLength = 10
-            };
-            grpMeta.Controls.Add(tbNrRys);
-
-            // Data
-            var labelData = L("DATA:", yRow);
-            labelData.Left = 290;
-            labelData.Width = 120;
-            grpMeta.Controls.Add(labelData);
-
-            dtpData = new CustomDatePicker
-            {
-                Left = 290,
-                Top = yRow + 25,
-                Width = 120
-            };
-            grpMeta.Controls.Add(dtpData);
-
+            var labelData = L("DATA:", yRow); labelData.Left = 290; labelData.Width = 120; grpMeta.Controls.Add(labelData);
+            dtpData = new CustomDatePicker { Left = 290, Top = yRow + 25, Width = 120 }; grpMeta.Controls.Add(dtpData);
 
             // Przyciski dolne
             btnOk = new Button { Text = "OK", Left = 640, Top = 550, Width = 110, DialogResult = DialogResult.OK };
             btnOk.Click += BtnOk_Click;
             btnCancel = new Button { Text = "Anuluj", Left = 760, Top = 550, Width = 110, DialogResult = DialogResult.Cancel };
-
 
             this.Controls.Add(grpLayers);
             this.Controls.Add(grpMeta);
@@ -209,12 +165,36 @@ namespace LegendPlugin
             this.CancelButton = btnCancel;
         }
 
-        // Komentarz: Załadowanie listy warstw do CheckedListBox.
-        private void LoadLayers()
+        // Komentarz: Załadowanie warstw do tabeli DataGridView
+        private void LoadLayersToGrid()
         {
-            clbLayers.Items.Clear();
-            foreach (var l in _layers.OrderBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase))
-                clbLayers.Items.Add(l, false);
+            dgvLayers.Rows.Clear();
+            foreach (var l in _layers.OrderBy(x => x.Name))
+            {
+                // Tworzymy bitmapę z kolorem warstwy
+                Bitmap bmp = new Bitmap(16, 16);
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    SDColor c = l.Color != null ? l.Color.ColorValue : SDColor.Gray;
+                    using (Brush b = new SolidBrush(c)) g.FillRectangle(b, 0, 0, 16, 16);
+                    g.DrawRectangle(Pens.Black, 0, 0, 15, 15);
+                }
+
+                int idx = dgvLayers.Rows.Add();
+                var row = dgvLayers.Rows[idx];
+
+                row.Cells["colCheck"].Value = false; // Domyślnie odznaczone
+                row.Cells["colName"].Value = l.Name;
+
+                // Domyślnie zaznaczamy "Kwadrat" jeśli nazwa sugeruje hatch
+                bool isHatchGuess = l.Name.ToLower().Contains("hatch") ||
+                                    l.Name.ToLower().Contains("wypełnienie") ||
+                                    l.Name.ToLower().Contains("kostka");
+                row.Cells["colIsHatch"].Value = isHatchGuess;
+
+                // Przechowujemy oryginalny obiekt w Tag
+                row.Tag = l;
+            }
         }
 
         private void LoadPersonLists()
@@ -224,45 +204,39 @@ namespace LegendPlugin
             cbOpracowujacy.Items.AddRange(PersonMemory.LoadOpracowujacy().ToArray());
         }
 
-        // Komentarz: Rysujemy wiersz listy z ikonką koloru (System.Drawing).
-        private void ClbLayers_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            if (e.Index < 0) return;
-
-            var item = clbLayers.Items[e.Index] as LegendCommand.LayerInfo;
-            e.DrawBackground();
-
-            var rect = new Rectangle(e.Bounds.Left + 22, e.Bounds.Top + 4, 18, e.Bounds.Height - 8);
-
-            // Komentarz: Bazowy kolor: szary; potem podmienimy na kolor z AutoCAD.
-            SDColor color = SDColor.Gray;
-
-            // Komentarz: Jeżeli LayerInfo ma ustawiony AutoCAD-owy kolor (AcColor) – używamy jego wartości RGB.
-            if (item?.Color != null)
-            {
-                // Komentarz: AcColor.ColorValue to już System.Drawing.Color – używamy bezpośrednio.
-                color = item.Color.ColorValue;
-            }
-
-            using (var br = new SolidBrush(color))
-            using (var pen = new Pen(SDColor.Black))
-            {
-                e.Graphics.FillRectangle(br, rect);
-                e.Graphics.DrawRectangle(pen, rect);
-            }
-
-            var textX = rect.Right + 8;
-            TextRenderer.DrawText(e.Graphics, item?.Name ?? "(warstwa)", e.Font, new Point(textX, e.Bounds.Top + 4), e.ForeColor);
-
-            e.DrawFocusRectangle();
-        }
-
         // Komentarz: Zbiór danych z formularza do obiektu LegendData.
         public LegendData GetData()
         {
+            // Zbieramy informacje o zaznaczonych warstwach i ich trybie (Hatch/Linia)
+            var selectedLayers = new List<LegendCommand.LayerInfo>();
+
+            foreach (DataGridViewRow row in dgvLayers.Rows)
+            {
+                bool isChecked = Convert.ToBoolean(row.Cells["colCheck"].Value);
+                if (isChecked)
+                {
+                    var originalInfo = row.Tag as LegendCommand.LayerInfo;
+                    bool isHatch = Convert.ToBoolean(row.Cells["colIsHatch"].Value);
+
+                    // Tworzymy nowy obiekt LayerInfo z ustawioną flagą IsHatch
+                    selectedLayers.Add(new LegendCommand.LayerInfo
+                    {
+                        Name = originalInfo.Name,
+                        Color = originalInfo.Color,
+                        IsHatch = isHatch
+                    });
+                }
+            }
+
+            // UWAGA: Musisz upewnić się, że klasa LegendData w LegendaCommands.cs
+            // posiada pole `SelectedLayersInfo` lub zaktualizować logikę jej użycia.
             var d = new LegendData
             {
-                SelectedLayers = clbLayers.CheckedItems.Cast<LegendCommand.LayerInfo>().Select(x => x.Name).ToList(),
+                // Przekazujemy listę obiektów (wymaga zmiany w LegendaCommands.cs!)
+                SelectedLayersInfo = selectedLayers,
+                // Stara lista (dla kompatybilności, jeśli potrzebna)
+                SelectedLayers = selectedLayers.Select(x => x.Name).ToList(),
+
                 JednostkaProjektowa = tbJednostka.Text,
                 Inwestor = tbInwestor.Text,
                 NazwaAdresObiektu = tbObiekt.Text,
@@ -273,11 +247,10 @@ namespace LegendPlugin
                 Skala = tbSkala.Text,
                 NumerRysunku = tbNrRys.Text,
                 Data = dtpData.Value.ToShortDateString(),
-
             };
             return d;
-
         }
+
         private void BtnOk_Click(object sender, EventArgs e)
         {
             // --- WALIDACJA ---
@@ -289,7 +262,6 @@ namespace LegendPlugin
                 return;
             }
 
-            // Sprawdzamy, które osoby są nowe (nie ma ich jeszcze w pamięci)
             string projektant = cbProjektant.Text;
             string sprawdzajacy = cbSprawdzajacy.Text;
             string opracowujacy = cbOpracowujacy.Text;
@@ -298,14 +270,12 @@ namespace LegendPlugin
             bool newSprawdzajacy = !string.IsNullOrWhiteSpace(sprawdzajacy) && !PersonMemory.LoadSprawdzajacy().Contains(sprawdzajacy);
             bool newOpracowujacy = !string.IsNullOrWhiteSpace(opracowujacy) && !PersonMemory.LoadOpracowujacy().Contains(opracowujacy);
 
-            // Jeśli nie ma żadnej nowej osoby → nie pokazujemy modala
             if (!newProjektant && !newSprawdzajacy && !newOpracowujacy)
             {
                 this.DialogResult = DialogResult.OK;
                 return;
             }
 
-            // Tworzymy modal tylko z nowymi osobami
             var dlg = new SavePersonsDialog(
                 newProjektant ? projektant : "",
                 newSprawdzajacy ? sprawdzajacy : "",
@@ -314,14 +284,9 @@ namespace LegendPlugin
 
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                if (dlg.SaveProjektant)
-                    PersonMemory.SaveProjektant(projektant);
-
-                if (dlg.SaveSprawdzajacy)
-                    PersonMemory.SaveSprawdzajacy(sprawdzajacy);
-
-                if (dlg.SaveOpracowujacy)
-                    PersonMemory.SaveOpracowujacy(opracowujacy);
+                if (dlg.SaveProjektant) PersonMemory.SaveProjektant(projektant);
+                if (dlg.SaveSprawdzajacy) PersonMemory.SaveSprawdzajacy(sprawdzajacy);
+                if (dlg.SaveOpracowujacy) PersonMemory.SaveOpracowujacy(opracowujacy);
 
                 this.DialogResult = DialogResult.OK;
             }

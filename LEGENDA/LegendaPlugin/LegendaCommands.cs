@@ -24,6 +24,7 @@ namespace LegendPlugin
     public class LegendData
     {
         public List<string> SelectedLayers { get; set; } = new List<string>();
+        public List<LegendCommand.LayerInfo> SelectedLayersInfo { get; set; } = new List<LegendCommand.LayerInfo>();
         public string JednostkaProjektowa { get; set; }
         public string Inwestor { get; set; }
         public string NazwaAdresObiektu { get; set; }
@@ -72,7 +73,7 @@ namespace LegendPlugin
 
         // Komentarz: Parametry legendy (górnej części).
         private const double LegendRowHeight = 5.0;
-        private const double IconSize = 3.0;
+        private const double IconSize = 4.0;
 
         [CommandMethod("LEGENDA")]
         public void RunLegend()
@@ -140,13 +141,13 @@ namespace LegendPlugin
                 // Ustawiamy go na 0.25 (zamiast domyślnego 1.0), żeby napisy w wąskich kolumnach (5mm) były dobrze wyjustowane i się mieściły.
 
                 // Pole SKALA (etykieta w wąskiej kolumnie 7.5mm, wartość pusta lub obok - tutaj etykieta).
-                DrawLabelAndValue(btr, tr, leftX, currentY, WidthCol_SignFunction, RowHeight_Footer, "SKALA RYS.", data.Skala, false, FontH_SigContent, FontH_FooterLabel, 0.25);
+                DrawLabelAndValue(btr, tr, leftX, currentY, WidthCol_SignFunction, RowHeight_Footer, "SKALA RYS.", data.Skala, true, FontH_SigContent, FontH_FooterLabel, 0.25);
 
                 // Pole NR RYS. (kolumna 5mm - mały margines konieczny).
-                DrawLabelAndValue(btr, tr, leftX + widthSkalaArea, currentY, widthNr, RowHeight_Footer, "NR RYS.", data.NumerRysunku, false, FontH_SigContent, FontH_FooterLabel, 0.25);
+                DrawLabelAndValue(btr, tr, leftX + widthSkalaArea, currentY, widthNr, RowHeight_Footer, "NR RYS.", data.NumerRysunku, true, FontH_SigContent, FontH_FooterLabel, 0.25);
 
                 // Pole ARKUSZ (kolumna 5mm - mały margines konieczny).
-                DrawLabelAndValue(btr, tr, leftX + widthSkalaArea + widthNr, currentY, widthArkusz, RowHeight_Footer, "ARKUSZ", "-", false, FontH_SigContent, FontH_FooterLabel, 0.25);
+                DrawLabelAndValue(btr, tr, leftX + widthSkalaArea + widthNr, currentY, widthArkusz, RowHeight_Footer, "ARKUSZ", "", true, FontH_SigContent, FontH_FooterLabel, 0.25);
 
                 currentY = footerTopY;
 
@@ -156,24 +157,24 @@ namespace LegendPlugin
                 double col2W = TotalWidth - col1W - col3W;
 
                 // Komentarz: Funkcja lokalna rysująca wiersz.
-                void DrawSigRow(string t1, string t2, string t3, double h, bool isHeader)
+                void DrawSigRow(string t1, string t2, string t3, double h, bool isHeader, bool isSign)
                 {
                     double top = currentY + h;
                     DrawLine(btr, tr, leftX, top, rightX, top);
                     DrawLine(btr, tr, leftX + col1W, currentY, leftX + col1W, top);
                     DrawLine(btr, tr, leftX + col1W + col2W, currentY, leftX + col1W + col2W, top);
 
-                    DrawCellText(btr, tr, leftX, currentY, col1W, h, t1, isHeader, false);
-                    DrawCellText(btr, tr, leftX + col1W, currentY, col2W, h, t2, isHeader, false);
-                    DrawCellText(btr, tr, leftX + col1W + col2W, currentY, col3W, h, t3, isHeader, !isHeader);
+                    DrawCellText(btr, tr, leftX, currentY, col1W, h, t1, isHeader, !isSign, false);
+                    DrawCellText(btr, tr, leftX + col1W, currentY, col2W, h, t2, isHeader, isSign, false);
+                    DrawCellText(btr, tr, leftX + col1W + col2W, currentY, col3W, h, t3, isHeader, !isSign, !isHeader);
 
                     currentY = top;
                 }
 
-                DrawSigRow("OPRACOWAŁ", data.Opracowujacy, data.Data, RowHeight_Signatures, false);
-                DrawSigRow("SPRAWDZIŁ", data.Sprawdzajacy, data.Data, RowHeight_Signatures, false);
-                DrawSigRow("PROJEKTANT", data.Projektant, data.Data, RowHeight_Signatures, false);
-                DrawSigRow("FUNKCJA", "IMIĘ I NAZWISKO", "PODPIS", RowHeight_SignHeader, true);
+                DrawSigRow("OPRACOWAŁ", data.Opracowujacy, data.Data, RowHeight_Signatures, false, true);
+                DrawSigRow("SPRAWDZIŁ", data.Sprawdzajacy, data.Data, RowHeight_Signatures, false, true);
+                DrawSigRow("PROJEKTANT", data.Projektant, data.Data, RowHeight_Signatures, false, true);
+                DrawSigRow("FUNKCJA", "IMIĘ I NAZWISKO", "PODPIS", RowHeight_SignHeader, true, false);
 
                 // --- TYTUŁ RYSUNKU ---
                 double titleTopY = currentY + RowHeight_Title;
@@ -184,7 +185,7 @@ namespace LegendPlugin
                 // --- NAZWA OBIEKTU ---
                 double objTopY = currentY + RowHeight_Object;
                 DrawLine(btr, tr, leftX, objTopY, rightX, objTopY);
-                DrawLabelAndValue(btr, tr, leftX, currentY, TotalWidth, RowHeight_Object, "NAZWA I ADRES OBIEKTU BUDOWLANEGO", data.NazwaAdresObiektu, false, FontH_Content);
+                DrawLabelAndValue(btr, tr, leftX, currentY, TotalWidth, RowHeight_Object, "NAZWA I ADRES OBIEKTU BUDOWLANEGO", data.NazwaAdresObiektu, true, FontH_Content);
                 currentY = objTopY;
 
                 // --- INWESTOR ---
@@ -216,36 +217,85 @@ namespace LegendPlugin
                 // Komentarz: NOWOŚĆ - Pozioma linia pod słowem LEGENDA.
                 // Linia na wysokości legendTopY - 5.0 (lekko pod tekstem). Długość ok. 25mm.
                 double lineY = legendTopY - 5.0;
-                DrawLine(btr, tr, legendX, lineY, legendX + 25.0, lineY);
+                DrawLine(btr, tr, basePt.X, lineY, rightX, lineY);
 
                 // Komentarz: Przesuwamy start rysowania elementów legendy niżej (pod linię).
-                double rowY = legendTopY - 8.0;
+                double rowY = legendTopY - 11.0;
 
-                foreach (var layerName in data.SelectedLayers)
+                // NOWA PĘTLA RYSUJĄCA (HATCH vs LINIA)
+                foreach (var info in data.SelectedLayersInfo)
                 {
                     if (rowY < currentY + 2.0) break;
 
-                    // Ikonka
-                    var icon = new Polyline();
+                    // A. Pobieramy właściwości z AutoCAD
+                    ObjectId linetypeId = ObjectId.Null;
+                    LineWeight lineWeight = LineWeight.ByLineWeightDefault;
+                    Transparency transparency = new Transparency((byte)255);
+                    AcColor layerColor = AcColor.FromColorIndex(ColorMethod.ByAci, 7);
+
+                    using (var trLayer = db.TransactionManager.StartTransaction())
+                    {
+                        var lt = (LayerTable)trLayer.GetObject(db.LayerTableId, OpenMode.ForRead);
+                        if (lt.Has(info.Name))
+                        {
+                            var ltr = (LayerTableRecord)trLayer.GetObject(lt[info.Name], OpenMode.ForRead);
+                            layerColor = ltr.Color;
+                            linetypeId = ltr.LinetypeObjectId;
+                            lineWeight = ltr.LineWeight;
+                            transparency = ltr.Transparency;
+                        }
+                        trLayer.Commit();
+                    }
+
                     double icL = legendX;
                     double icB = rowY + 1.0;
-                    icon.AddVertexAt(0, new Point2d(icL, icB), 0, 0, 0);
-                    icon.AddVertexAt(1, new Point2d(icL + IconSize, icB), 0, 0, 0);
-                    icon.AddVertexAt(2, new Point2d(icL + IconSize, icB + IconSize), 0, 0, 0);
-                    icon.AddVertexAt(3, new Point2d(icL, icB + IconSize), 0, 0, 0);
-                    icon.Closed = true;
+                    double icMidY = icB + (IconSize / 2.0);
 
-                    var layerColor = GetLayerColor(layerName);
-                    if (layerColor != null) icon.Color = layerColor;
+                    // B. Rysowanie w zależności od wyboru w tabeli (IsHatch)
+                    if (info.IsHatch)
+                    {
+                        // --- OPCJA: KWADRAT (SOLID HATCH) ---
+                        var iconLoop = new Polyline();
+                        iconLoop.AddVertexAt(0, new Point2d(icL, icB), 0, 0, 0);
+                        iconLoop.AddVertexAt(1, new Point2d(icL + IconSize, icB), 0, 0, 0);
+                        iconLoop.AddVertexAt(2, new Point2d(icL + IconSize, icB + IconSize), 0, 0, 0);
+                        iconLoop.AddVertexAt(3, new Point2d(icL, icB + IconSize), 0, 0, 0);
+                        iconLoop.Closed = true;
+                        iconLoop.Color = layerColor;
+                        iconLoop.Transparency = transparency;
+                        btr.AppendEntity(iconLoop); tr.AddNewlyCreatedDBObject(iconLoop, true);
 
-                    btr.AppendEntity(icon); tr.AddNewlyCreatedDBObject(icon, true);
+                        var hatch = new Hatch();
+                        hatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+                        hatch.Color = layerColor;
+                        hatch.Transparency = transparency;
+                        btr.AppendEntity(hatch); tr.AddNewlyCreatedDBObject(hatch, true);
 
-                    // Opis
+                        hatch.Associative = true;
+                        hatch.AppendLoop(HatchLoopTypes.Default, new ObjectIdCollection { iconLoop.ObjectId });
+                        hatch.EvaluateHatch(true);
+                    }
+                    else
+                    {
+                        // --- OPCJA: SAMA LINIA ---
+                        var lineSymbol = new Line(new Point3d(icL, icMidY, 0), new Point3d(icL + IconSize, icMidY, 0));
+                        lineSymbol.Color = layerColor;
+                        lineSymbol.LineWeight = lineWeight;
+                        lineSymbol.Transparency = transparency;
+
+                        if (linetypeId != ObjectId.Null)
+                        {
+                            lineSymbol.LinetypeId = linetypeId;
+                            lineSymbol.LinetypeScale = 1.0;
+                        }
+                        btr.AppendEntity(lineSymbol); tr.AddNewlyCreatedDBObject(lineSymbol, true);
+                    }
+
+                    // C. Opis tekstowy
                     var descTxt = new DBText();
                     descTxt.Position = new Point3d(legendX + IconSize + 2.0, rowY + 1.5, 0);
                     descTxt.Height = FontH_Content;
-                    descTxt.TextString = layerName;
-
+                    descTxt.TextString = info.Name;
                     btr.AppendEntity(descTxt); tr.AddNewlyCreatedDBObject(descTxt, true);
 
                     rowY -= LegendRowHeight;
@@ -253,7 +303,7 @@ namespace LegendPlugin
 
                 tr.Commit();
             }
-            ed.WriteMessage("\nWygenerowano legendę (usunięto VA, wyjustowano stopkę, linia pod nagłówkiem).");
+            ed.WriteMessage("\nWygenerowano legendę.");
         }
 
         // =============================================================
@@ -284,14 +334,15 @@ namespace LegendPlugin
 
             // Wartość
             var mt = new MText();
-            mt.Contents = string.IsNullOrWhiteSpace(value) ? "-" : value;
+            //mt.Contents = string.IsNullOrWhiteSpace(value) ? "-" : value;
+            mt.Contents = value;
             mt.TextHeight = customH;
             mt.Width = w - (2 * margin);
 
             if (centerValue)
             {
                 mt.Attachment = AttachmentPoint.MiddleCenter;
-                mt.Location = new Point3d(x + w / 2.0, bottomY + h / 2.0, 0);
+                mt.Location = new Point3d(x + w / 2.0, (bottomY + h / 2.0) - 0.5, 0);
             }
             else
             {
@@ -303,7 +354,7 @@ namespace LegendPlugin
             btr.AppendEntity(mt); tr.AddNewlyCreatedDBObject(mt, true);
         }
 
-        private void DrawCellText(BlockTableRecord btr, Transaction tr, double x, double bottomY, double w, double h, string text, bool isHeader, bool alignBottom)
+        private void DrawCellText(BlockTableRecord btr, Transaction tr, double x, double bottomY, double w, double h, string text, bool isHeader, bool isSign, bool alignBottom)
         {
             var mt = new MText();
             mt.Contents = text;
@@ -323,6 +374,7 @@ namespace LegendPlugin
             }
 
             if (isHeader) mt.ColorIndex = 8;
+            if (isSign) mt.TextHeight = 0.8;
 
             btr.AppendEntity(mt); tr.AddNewlyCreatedDBObject(mt, true);
         }
@@ -365,6 +417,7 @@ namespace LegendPlugin
             public string Name { get; set; }
             public AcColor Color { get; set; }
             public override string ToString() => Name;
+            public bool IsHatch { get; set; }
         }
     }
 }
