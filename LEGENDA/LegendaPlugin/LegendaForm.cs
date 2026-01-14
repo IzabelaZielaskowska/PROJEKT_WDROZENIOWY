@@ -1,52 +1,41 @@
-﻿// Komentarz: .NET/WinForms.
-using Autodesk.AutoCAD.DatabaseServices;
-using LegendPlugin;
+﻿using Autodesk.AutoCAD.DatabaseServices;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using AcColor = Autodesk.AutoCAD.Colors.Color;        // Komentarz: Kolor AutoCAD-a (warstwy).
-// Komentarz: >>> Aliasujemy typy koloru, aby uniknąć konfliktu nazw.
-using SDColor = System.Drawing.Color;                  // Komentarz: Kolor do rysowania w WinForms.
 
 namespace LegendPlugin
 {
     public class LegendForm : Form
     {
-        // Komentarz: Zmieniamy CheckedListBox na DataGridView, aby mieć kolumny.
         private DataGridView dgvLayers;
-
-        private TextBox tbJednostka, tbInwestor, tbObiekt, tbTytul, tbSkala, tbNrRys;
+        private ComboBox cbJednostka, cbInwestor, cbObiekt, cbTytul, cbSkala;
+        private TextBox tbNrRys;
         private ComboBox cbProjektant, cbSprawdzajacy, cbOpracowujacy;
         private LegendPlugin.CustomDatePicker dtpData;
         private Button btnOk, btnCancel;
 
-        // Komentarz: Warstwy wejściowe (z kolorem AutoCAD).
         private readonly List<LegendCommand.LayerInfo> _layers;
 
-        // Komentarz: Konstruktor – przekazujemy listę warstw.
         public LegendForm(List<LegendCommand.LayerInfo> layers)
         {
             _layers = layers ?? new List<LegendCommand.LayerInfo>();
             this.Text = "Legenda – wybór warstw i dane metryczki";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Size = new Size(950, 620); // Nieco szersze okno dla tabeli
+            this.Size = new Size(950, 650);
             this.MinimizeBox = false;
             this.MaximizeBox = false;
 
             BuildUi();
-            LoadLayersToGrid(); // Zmiana nazwy metody ładowania
+            LoadLayersToGrid();
             LoadPersonLists();
         }
 
-        // Komentarz: Budowa interfejsu.
         private void BuildUi()
         {
-            // Grupa lewa: Warstwy
             var grpLayers = new GroupBox { Text = "Warstwy (zaznacz 'Kwadrat' dla hatch)", Left = 10, Top = 10, Width = 430, Height = 530 };
 
-            // Komentarz: Tworzymy tabelę zamiast listy
             dgvLayers = new DataGridView
             {
                 Left = 10,
@@ -62,68 +51,47 @@ namespace LegendPlugin
                 BorderStyle = BorderStyle.FixedSingle
             };
 
-            // Definicja kolumn
             var colCheck = new DataGridViewCheckBoxColumn { HeaderText = "Wybierz", Width = 50, Name = "colCheck" };
             var colName = new DataGridViewTextBoxColumn { HeaderText = "Nazwa Warstwy", Width = 307, Name = "colName", ReadOnly = true };
-            var colIsHatch = new DataGridViewCheckBoxColumn { HeaderText = "Kwadrat", Width = 50, Name = "colIsHatch", ToolTipText = "Zaznacz, aby rysować wypełniony kwadrat (Solid Hatch)" };
+            var colIsHatch = new DataGridViewCheckBoxColumn { HeaderText = "Kwadrat", Width = 50, Name = "colIsHatch" };
 
             dgvLayers.Columns.AddRange(colCheck, colName, colIsHatch);
             grpLayers.Controls.Add(dgvLayers);
 
-            // Grupa prawa: Metryczka (BEZ ZMIAN W UKŁADZIE)
-            var grpMeta = new GroupBox { Text = "Dane metryczki", Left = 500, Top = 10, Width = 430, Height = 530 };
+            var grpMeta = new GroupBox { Text = "Dane metryczki", Left = 500, Top = 10, Width = 430, Height = 560 };
 
-            // Funkcje pomocnicze do tworzenia etykiet i prostych kontrolek
             Label L(string t, int y) => new Label { Text = t, Left = 10, Top = y, Width = 200 };
-            TextBox T(int y, bool wide = true) => new TextBox { Left = 10, Top = y, Width = wide ? 400 : 180 };
-            ComboBox C(int y) => new ComboBox { Left = 10, Top = y, Width = 400, DropDownStyle = ComboBoxStyle.DropDown };
+            ComboBox C(int y, bool multiLine = false) => new ComboBox
+            {
+                Left = 10,
+                Top = y,
+                Width = 400,
+                DropDownStyle = ComboBoxStyle.DropDown,
+                AutoCompleteMode = AutoCompleteMode.SuggestAppend,
+                AutoCompleteSource = AutoCompleteSource.ListItems
+            };
 
-            int y0 = 25; // Pozycja startowa Y
+            int y0 = 25;
 
-            // 1. TYTUŁ RYSUNKU
             grpMeta.Controls.Add(L("TYTUŁ RYSUNKU:", y0));
-            tbTytul = T(y0 + 25);
-            tbTytul.MaxLength = 200;
-            grpMeta.Controls.Add(tbTytul);
+            cbTytul = C(y0 + 25);
+            grpMeta.Controls.Add(cbTytul);
 
-            // 2. JEDNOSTKA PROJEKTOWA
             int yJednostka = y0 + 60;
             grpMeta.Controls.Add(L("JEDNOSTKA PROJEKTOWA:", yJednostka));
-            tbJednostka = new TextBox
-            {
-                Left = 10,
-                Top = yJednostka + 25,
-                Width = 400,
-                Height = 45,
-                Multiline = true,
-                AcceptsReturn = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-            grpMeta.Controls.Add(tbJednostka);
+            cbJednostka = C(yJednostka + 25);
+            grpMeta.Controls.Add(cbJednostka);
 
-            // 3. INWESTOR
-            int yInwestor = yJednostka + 80;
+            int yInwestor = yJednostka + 60;
             grpMeta.Controls.Add(L("INWESTOR:", yInwestor));
-            tbInwestor = new TextBox
-            {
-                Left = 10,
-                Top = yInwestor + 25,
-                Width = 400,
-                Height = 45,
-                Multiline = true,
-                AcceptsReturn = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-            grpMeta.Controls.Add(tbInwestor);
+            cbInwestor = C(yInwestor + 25);
+            grpMeta.Controls.Add(cbInwestor);
 
-            // 4. NAZWA I ADRES OBIEKTU
-            int yObiekt = yInwestor + 80;
+            int yObiekt = yInwestor + 60;
             grpMeta.Controls.Add(L("NAZWA I ADRES OBIEKTU:", yObiekt));
-            tbObiekt = T(yObiekt + 25);
-            tbObiekt.MaxLength = 200;
-            grpMeta.Controls.Add(tbObiekt);
+            cbObiekt = C(yObiekt + 25);
+            grpMeta.Controls.Add(cbObiekt);
 
-            // 5. OSOBY
             int yProjektant = yObiekt + 60;
             grpMeta.Controls.Add(L("PROJEKTANT:", yProjektant));
             cbProjektant = C(yProjektant + 25);
@@ -135,26 +103,26 @@ namespace LegendPlugin
             grpMeta.Controls.Add(cbSprawdzajacy);
 
             int yOpracowujacy = ySprawdzajacy + 60;
-            grpMeta.Controls.Add(L("OPRACOWAŁ(A)::", yOpracowujacy));
+            grpMeta.Controls.Add(L("OPRACOWAŁ(A):", yOpracowujacy));
             cbOpracowujacy = C(yOpracowujacy + 25);
             grpMeta.Controls.Add(cbOpracowujacy);
 
-            // 6. STOPKA
             int yRow = yOpracowujacy + 60;
-
             var labelSkala = L("SKALA:", yRow); labelSkala.Left = 10; labelSkala.Width = 120; grpMeta.Controls.Add(labelSkala);
-            tbSkala = new TextBox { Left = 10, Top = yRow + 25, Width = 120, MaxLength = 20 }; grpMeta.Controls.Add(tbSkala);
+            cbSkala = new ComboBox { Left = 10, Top = yRow + 25, Width = 120, DropDownStyle = ComboBoxStyle.DropDown };
+            grpMeta.Controls.Add(cbSkala);
 
             var labelNr = L("NR. RYSUNKU:", yRow); labelNr.Left = 150; labelNr.Width = 120; grpMeta.Controls.Add(labelNr);
-            tbNrRys = new TextBox { Left = 150, Top = yRow + 25, Width = 120, MaxLength = 10 }; grpMeta.Controls.Add(tbNrRys);
+            tbNrRys = new TextBox { Left = 150, Top = yRow + 25, Width = 120, MaxLength = 10 };
+            grpMeta.Controls.Add(tbNrRys);
 
             var labelData = L("DATA:", yRow); labelData.Left = 290; labelData.Width = 120; grpMeta.Controls.Add(labelData);
-            dtpData = new CustomDatePicker { Left = 290, Top = yRow + 25, Width = 120 }; grpMeta.Controls.Add(dtpData);
+            dtpData = new LegendPlugin.CustomDatePicker { Left = 290, Top = yRow + 25, Width = 120 };
+            grpMeta.Controls.Add(dtpData);
 
-            // Przyciski dolne
-            btnOk = new Button { Text = "OK", Left = 640, Top = 550, Width = 110, DialogResult = DialogResult.OK };
+            btnOk = new Button { Text = "OK", Left = 640, Top = 580, Width = 110 };
             btnOk.Click += BtnOk_Click;
-            btnCancel = new Button { Text = "Anuluj", Left = 760, Top = 550, Width = 110, DialogResult = DialogResult.Cancel };
+            btnCancel = new Button { Text = "Anuluj", Left = 760, Top = 580, Width = 110, DialogResult = DialogResult.Cancel };
 
             this.Controls.Add(grpLayers);
             this.Controls.Add(grpMeta);
@@ -165,34 +133,17 @@ namespace LegendPlugin
             this.CancelButton = btnCancel;
         }
 
-        // Komentarz: Załadowanie warstw do tabeli DataGridView
         private void LoadLayersToGrid()
         {
             dgvLayers.Rows.Clear();
             foreach (var l in _layers.OrderBy(x => x.Name))
             {
-                // Tworzymy bitmapę z kolorem warstwy
-                Bitmap bmp = new Bitmap(16, 16);
-                using (Graphics g = Graphics.FromImage(bmp))
-                {
-                    SDColor c = l.Color != null ? l.Color.ColorValue : SDColor.Gray;
-                    using (Brush b = new SolidBrush(c)) g.FillRectangle(b, 0, 0, 16, 16);
-                    g.DrawRectangle(Pens.Black, 0, 0, 15, 15);
-                }
-
                 int idx = dgvLayers.Rows.Add();
                 var row = dgvLayers.Rows[idx];
-
-                row.Cells["colCheck"].Value = false; // Domyślnie odznaczone
+                row.Cells["colCheck"].Value = false;
                 row.Cells["colName"].Value = l.Name;
-
-                // Domyślnie zaznaczamy "Kwadrat" jeśli nazwa sugeruje hatch
-                bool isHatchGuess = l.Name.ToLower().Contains("hatch") ||
-                                    l.Name.ToLower().Contains("wypełnienie") ||
-                                    l.Name.ToLower().Contains("kostka");
+                bool isHatchGuess = l.Name.ToLower().Contains("hatch") || l.Name.ToLower().Contains("wypełnienie");
                 row.Cells["colIsHatch"].Value = isHatchGuess;
-
-                // Przechowujemy oryginalny obiekt w Tag
                 row.Tag = l;
             }
         }
@@ -202,97 +153,100 @@ namespace LegendPlugin
             cbProjektant.Items.AddRange(PersonMemory.LoadProjektanci().ToArray());
             cbSprawdzajacy.Items.AddRange(PersonMemory.LoadSprawdzajacy().ToArray());
             cbOpracowujacy.Items.AddRange(PersonMemory.LoadOpracowujacy().ToArray());
+
+            cbJednostka.Items.AddRange(PersonMemory.LoadJednostki().ToArray());
+            cbInwestor.Items.AddRange(PersonMemory.LoadInwestorzy().ToArray());
+            cbObiekt.Items.AddRange(PersonMemory.LoadObiekty().ToArray());
+            cbTytul.Items.AddRange(PersonMemory.LoadTytuly().ToArray());
+            cbSkala.Items.AddRange(PersonMemory.LoadSkale().ToArray());
         }
 
-        // Komentarz: Zbiór danych z formularza do obiektu LegendData.
         public LegendData GetData()
         {
-            // Zbieramy informacje o zaznaczonych warstwach i ich trybie (Hatch/Linia)
             var selectedLayers = new List<LegendCommand.LayerInfo>();
-
             foreach (DataGridViewRow row in dgvLayers.Rows)
             {
-                bool isChecked = Convert.ToBoolean(row.Cells["colCheck"].Value);
-                if (isChecked)
+                if (Convert.ToBoolean(row.Cells["colCheck"].Value))
                 {
                     var originalInfo = row.Tag as LegendCommand.LayerInfo;
-                    bool isHatch = Convert.ToBoolean(row.Cells["colIsHatch"].Value);
-
-                    // Tworzymy nowy obiekt LayerInfo z ustawioną flagą IsHatch
                     selectedLayers.Add(new LegendCommand.LayerInfo
                     {
                         Name = originalInfo.Name,
                         Color = originalInfo.Color,
-                        IsHatch = isHatch
+                        IsHatch = Convert.ToBoolean(row.Cells["colIsHatch"].Value)
                     });
                 }
             }
 
-            // UWAGA: Musisz upewnić się, że klasa LegendData w LegendaCommands.cs
-            // posiada pole `SelectedLayersInfo` lub zaktualizować logikę jej użycia.
-            var d = new LegendData
+            return new LegendData
             {
-                // Przekazujemy listę obiektów (wymaga zmiany w LegendaCommands.cs!)
                 SelectedLayersInfo = selectedLayers,
-                // Stara lista (dla kompatybilności, jeśli potrzebna)
                 SelectedLayers = selectedLayers.Select(x => x.Name).ToList(),
-
-                JednostkaProjektowa = tbJednostka.Text,
-                Inwestor = tbInwestor.Text,
-                NazwaAdresObiektu = tbObiekt.Text,
-                TytulRysunku = tbTytul.Text,
+                JednostkaProjektowa = cbJednostka.Text,
+                Inwestor = cbInwestor.Text,
+                NazwaAdresObiektu = cbObiekt.Text,
+                TytulRysunku = cbTytul.Text,
                 Projektant = cbProjektant.Text,
                 Sprawdzajacy = cbSprawdzajacy.Text,
                 Opracowujacy = cbOpracowujacy.Text,
-                Skala = tbSkala.Text,
+                Skala = cbSkala.Text,
                 NumerRysunku = tbNrRys.Text,
                 Data = dtpData.Value.ToShortDateString(),
             };
-            return d;
         }
 
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            // --- WALIDACJA ---
-            if (string.IsNullOrWhiteSpace(tbTytul.Text))
+            if (string.IsNullOrWhiteSpace(cbTytul.Text))
             {
                 MessageBox.Show("Pole 'Tytuł rysunku' jest wymagane.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                tbTytul.Focus();
-                this.DialogResult = DialogResult.None;
+                cbTytul.Focus();
                 return;
             }
 
-            string projektant = cbProjektant.Text;
-            string sprawdzajacy = cbSprawdzajacy.Text;
-            string opracowujacy = cbOpracowujacy.Text;
+            var newEntries = new Dictionary<string, string>();
 
-            bool newProjektant = !string.IsNullOrWhiteSpace(projektant) && !PersonMemory.LoadProjektanci().Contains(projektant);
-            bool newSprawdzajacy = !string.IsNullOrWhiteSpace(sprawdzajacy) && !PersonMemory.LoadSprawdzajacy().Contains(sprawdzajacy);
-            bool newOpracowujacy = !string.IsNullOrWhiteSpace(opracowujacy) && !PersonMemory.LoadOpracowujacy().Contains(opracowujacy);
+            CheckAndAdd(newEntries, "Projektant", cbProjektant.Text, PersonMemory.LoadProjektanci());
+            CheckAndAdd(newEntries, "Sprawdzający", cbSprawdzajacy.Text, PersonMemory.LoadSprawdzajacy());
+            CheckAndAdd(newEntries, "Opracowujący", cbOpracowujacy.Text, PersonMemory.LoadOpracowujacy());
+            CheckAndAdd(newEntries, "Jednostka", cbJednostka.Text, PersonMemory.LoadJednostki());
+            CheckAndAdd(newEntries, "Inwestor", cbInwestor.Text, PersonMemory.LoadInwestorzy());
+            CheckAndAdd(newEntries, "Obiekt", cbObiekt.Text, PersonMemory.LoadObiekty());
+            CheckAndAdd(newEntries, "Tytuł", cbTytul.Text, PersonMemory.LoadTytuly());
+            CheckAndAdd(newEntries, "Skala", cbSkala.Text, PersonMemory.LoadSkale());
 
-            if (!newProjektant && !newSprawdzajacy && !newOpracowujacy)
+            if (newEntries.Count > 0)
             {
-                this.DialogResult = DialogResult.OK;
-                return;
-            }
+                var dlg = new SavePersonsDialog(newEntries);
+                if (dlg.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (dlg.ShouldSave("Projektant")) PersonMemory.SaveProjektant(cbProjektant.Text);
+                    if (dlg.ShouldSave("Sprawdzający")) PersonMemory.SaveSprawdzajacy(cbSprawdzajacy.Text);
+                    if (dlg.ShouldSave("Opracowujący")) PersonMemory.SaveOpracowujacy(cbOpracowujacy.Text);
+                    if (dlg.ShouldSave("Jednostka")) PersonMemory.SaveJednostka(cbJednostka.Text);
+                    if (dlg.ShouldSave("Inwestor")) PersonMemory.SaveInwestor(cbInwestor.Text);
+                    if (dlg.ShouldSave("Obiekt")) PersonMemory.SaveObiekt(cbObiekt.Text);
+                    if (dlg.ShouldSave("Tytuł")) PersonMemory.SaveTytul(cbTytul.Text);
+                    if (dlg.ShouldSave("Skala")) PersonMemory.SaveSkala(cbSkala.Text);
 
-            var dlg = new SavePersonsDialog(
-                newProjektant ? projektant : "",
-                newSprawdzajacy ? sprawdzajacy : "",
-                newOpracowujacy ? opracowujacy : ""
-            );
-
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-                if (dlg.SaveProjektant) PersonMemory.SaveProjektant(projektant);
-                if (dlg.SaveSprawdzajacy) PersonMemory.SaveSprawdzajacy(sprawdzajacy);
-                if (dlg.SaveOpracowujacy) PersonMemory.SaveOpracowujacy(opracowujacy);
-
-                this.DialogResult = DialogResult.OK;
+                    this.DialogResult = DialogResult.OK;
+                }
+                else {
+                    this.DialogResult = DialogResult.None;
+                    return;
+                }
             }
             else
             {
-                this.DialogResult = DialogResult.None;
+                this.DialogResult = DialogResult.OK;
+            }
+        }
+
+        private void CheckAndAdd(Dictionary<string, string> dict, string key, string val, List<string> existing)
+        {
+            if (!string.IsNullOrWhiteSpace(val) && !existing.Contains(val.Trim()))
+            {
+                dict.Add(key, val.Trim());
             }
         }
     }

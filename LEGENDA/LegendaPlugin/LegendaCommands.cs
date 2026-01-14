@@ -1,5 +1,4 @@
-﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Colors;
+﻿using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
@@ -75,7 +74,6 @@ namespace LegendPlugin
             {
                 var btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
 
-                // --- 1. METRYCZKA ---
                 double currentY = basePt.Y;
                 double leftX = basePt.X;
                 double rightX = basePt.X + TotalWidth;
@@ -130,7 +128,6 @@ namespace LegendPlugin
                 DrawLabelAndValue(btr, tr, leftX, currentY, TotalWidth, RowHeight_Unit, "JEDNOSTKA PROJEKTOWA", data.JednostkaProjektowa, false, FontH_Content);
                 currentY = unitTopY;
 
-                // --- 2. LEGENDA I KOLUMNY ---
                 double legendTopY = basePt.Y + TotalHeight;
                 int columnIndex = 0;
                 double limitY = currentY;
@@ -149,13 +146,11 @@ namespace LegendPlugin
                 DrawColumnFrame(basePt.X);
                 double currentLegendX = basePt.X + 2.5;
 
-                // TYLKO W PIERWSZEJ KOLUMNIE: Napis i Kreska
                 var headerTxt = new DBText();
                 headerTxt.Position = new Point3d(currentLegendX, legendTopY - 3.5, 0);
                 headerTxt.Height = 2.0; headerTxt.TextString = "LEGENDA:";
                 btr.AppendEntity(headerTxt); tr.AddNewlyCreatedDBObject(headerTxt, true);
 
-                // Przywrócona kreska pod napisem "LEGENDA:"
                 DrawLine(btr, tr, basePt.X, legendTopY - 5.0, basePt.X + TotalWidth, legendTopY - 5.0);
 
                 double rowY = legendTopY - 11.0;
@@ -170,7 +165,7 @@ namespace LegendPlugin
 
                         limitY = basePt.Y + 2.0;
                         currentLegendX = nextX + 2.5;
-                        rowY = legendTopY - 5.0; // Start wyżej w kolejnych kolumnach (bez napisu)
+                        rowY = legendTopY - 5.0;
                     }
 
                     AcColor layerColor = AcColor.FromColorIndex(ColorMethod.ByAci, 7);
