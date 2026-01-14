@@ -4,7 +4,6 @@ using System.Windows.Forms;
 
 namespace LegendPlugin
 {
-    // kalendarz z taką ikoną zeby pasowała do reszty
     public class CustomDatePicker : UserControl
     {
         private TextBox txtDate;
@@ -16,7 +15,6 @@ namespace LegendPlugin
 
         public CustomDatePicker()
         {
-            // Pole tekstowe
             txtDate = new TextBox
             {
                 ReadOnly = true,
@@ -26,7 +24,6 @@ namespace LegendPlugin
                 BorderStyle = BorderStyle.FixedSingle
             };
 
-            // Przycisk z własną ikoną
             btnCalendar = new Button
             {
                 Dock = DockStyle.Right,
@@ -47,7 +44,6 @@ namespace LegendPlugin
             this.MinimumSize = new Size(120, txtDate.Height);
         }
 
-        // Rysowanie ikony - zapytać Izy czy taka ok
         private void BtnCalendar_Paint(object sender, PaintEventArgs e)
         {
             var g = e.Graphics;
@@ -55,14 +51,12 @@ namespace LegendPlugin
 
             using (var pen = new Pen(Color.Gray))
             {
-                // Ramka
                 g.DrawRectangle(pen, rect);
-                // Linie symbolizujące kratki
+
                 g.DrawLine(pen, rect.Left, rect.Top + 4, rect.Right, rect.Top + 4);
                 g.DrawLine(pen, rect.Left, rect.Top + 8, rect.Right, rect.Top + 8);
                 g.DrawLine(pen, rect.Left + 4, rect.Top + 4, rect.Left + 4, rect.Bottom);
                 g.DrawLine(pen, rect.Left + 9, rect.Top + 4, rect.Left + 9, rect.Bottom);
-                // Górne "kółka"
                 g.FillEllipse(Brushes.Gray, rect.Left + 2, rect.Top - 3, 3, 3);
                 g.FillEllipse(Brushes.Gray, rect.Right - 5, rect.Top - 3, 3, 3);
             }
@@ -80,7 +74,7 @@ namespace LegendPlugin
                 BackColor = Color.White,
                 TopMost = true,
                 AutoSize = true,
-                MaximumSize = new Size(800, 200), // trzeba bylo ustawic bo cos mi nie dzialalo z wielkoscia
+                MaximumSize = new Size(800, 200),
             };
 
             calendar = new MonthCalendar
@@ -99,10 +93,10 @@ namespace LegendPlugin
                 popupForm = null;
             };
 
-            // Ustawiamy kalendarz w formie w naturalnym rozmiarze 
+
             popupForm.Controls.Add(calendar);
             calendar.AutoSize = true;
-            calendar.Dock = DockStyle.Fill; // Dopasowujemy formularz do kalendarza - pomoglo czesciowo
+            calendar.Dock = DockStyle.Fill;
             var screenPoint = this.PointToScreen(new Point(0, this.Height));
             popupForm.Location = screenPoint;
 

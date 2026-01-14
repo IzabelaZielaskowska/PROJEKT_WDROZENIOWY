@@ -1,79 +1,61 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace LegendPlugin
 {
     public class SavePersonsDialog : Form
     {
-        private CheckBox cbProj;
-        private CheckBox cbSpr;
-        private CheckBox cbOpr;
+        private FlowLayoutPanel flowPanel;
+        private Dictionary<string, CheckBox> checkBoxes = new Dictionary<string, CheckBox>();
 
-        public bool SaveProjektant => cbProj.Checked;
-        public bool SaveSprawdzajacy => cbSpr.Checked;
-        public bool SaveOpracowujacy => cbOpr.Checked;
+        public bool ShouldSave(string key) => checkBoxes.ContainsKey(key) && checkBoxes[key].Checked;
 
-        public SavePersonsDialog(string projektant, string sprawdzajacy, string opracowujacy)
+        public SavePersonsDialog(Dictionary<string, string> valuesToSave)
         {
-            this.Text = "Czy chcesz zapisać w pamięci osobę?";
+            this.Text = "Czy chcesz zapisać nowe dane w pamięci?";
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
-            this.MinimizeBox = false;
             this.MaximizeBox = false;
-            this.ClientSize = new Size(420, 170);
+            this.MinimizeBox = false;
+            this.ClientSize = new Size(450, 400);
 
-            cbProj = new CheckBox
+            flowPanel = new FlowLayoutPanel
             {
-                Left = 20,
-                Top = 20,
-                Width = 380,
-                Text = $"Zapisz projektanta: {projektant}",
-                Visible = !string.IsNullOrWhiteSpace(projektant)
+                Dock = DockStyle.Top,
+                Height = 330,
+                AutoScroll = true,
+                Padding = new Padding(10),
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false
             };
 
-            cbSpr = new CheckBox
+            foreach (var item in valuesToSave)
             {
-                Left = 20,
-                Top = 50,
-                Width = 380,
-                Text = $"Zapisz sprawdzającego: {sprawdzajacy}",
-                Visible = !string.IsNullOrWhiteSpace(sprawdzajacy)
-            };
+                if (!string.IsNullOrWhiteSpace(item.Value))
+                {
+                    var cb = new CheckBox
+                    {
+                        Text = $"Zapisz {item.Key}: {item.Value}",
+                        Width = 400,
+                        Checked = true,
+                        Margin = new Padding(0, 5, 0, 5)
+                    };
+                    checkBoxes.Add(item.Key, cb);
+                    flowPanel.Controls.Add(cb);
+                }
+            }
 
-            cbOpr = new CheckBox
-            {
-                Left = 20,
-                Top = 80,
-                Width = 380,
-                Text = $"Zapisz opracowującego: {opracowujacy}",
-                Visible = !string.IsNullOrWhiteSpace(opracowujacy)
-            };
+            var btnPanel = new Panel { Dock = DockStyle.Bottom, Height = 50 };
+            var btnOK = new Button { Text = "OK", Left = 250, Top = 10, DialogResult = DialogResult.OK };
+            var btnCancel = new Button { Text = "Anuluj", Left = 340, Top = 10, DialogResult = DialogResult.Cancel };
 
-            Controls.Add(cbProj);
-            Controls.Add(cbSpr);
-            Controls.Add(cbOpr);
+            btnPanel.Controls.Add(btnOK);
+            btnPanel.Controls.Add(btnCancel);
 
-            var btnOK = new Button
-            {
-                Text = "OK",
-                Left = 220,
-                Top = 130,
-                Width = 80,
-                DialogResult = DialogResult.OK
-            };
-            Controls.Add(btnOK);
-
-            var btnCancel = new Button
-            {
-                Text = "Anuluj",
-                Left = 310,
-                Top = 130,
-                Width = 80,
-                DialogResult = DialogResult.Cancel
-            };
-            Controls.Add(btnCancel);
-
+            this.Controls.Add(flowPanel);
+            this.Controls.Add(btnPanel);
             this.AcceptButton = btnOK;
             this.CancelButton = btnCancel;
         }
